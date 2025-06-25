@@ -1,0 +1,164 @@
+@media screen and (max-width: 1250px) {
+  .left {
+    position: absolute;
+    left: -100%;
+    transition: all 0.3s;
+    z-index: 1;
+    width: 50%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .right {
+    width: 100%;
+  }
+
+  .creeker {
+    width: 65%;
+  }
+  .card {
+    width: 27%;
+  }
+
+  .card-container {
+    justify-content: center;
+  }
+
+  .nav {
+    display: flex;
+
+    justify-content: space-evenly;
+  }
+  .nav-icons {
+    display: flex;
+    gap: 50px;
+  }
+  .hamberger {
+    display: block;
+    cursor: pointer;
+  }
+  .xmark {
+    display: block;
+    cursor: pointer;
+  }
+  .fa-solid {
+    font-size: 2.5rem;
+  }
+  .song-buttons i {
+    font-size: 3rem;
+  }
+  .library-footer {
+    justify-content: center;
+  }
+  .home ul li {
+    font-size: 1.2rem;
+
+    border: 1px solid grey;
+    padding: 10px;
+  }
+  .home {
+    padding: 7px;
+  }
+  .time-volume {
+    flex-direction: column;
+  }
+}
+.volume-input i,
+input {
+  font-size: 1rem;
+}
+
+@media screen and (max-width: 830px) {
+  .left {
+    width: 65%;
+  }
+  .card {
+    width: 45%;
+  }
+  .song-buttons i {
+    font-size: 2rem;
+  }
+  .song-buttons {
+    margin-top: 7px;
+    gap: 25px;
+  }
+  .volume-input input {
+    width: 90px;
+  }
+}
+
+@media screen and (max-width: 445px) {
+  .player {
+    position: fixed;
+    bottom: 26%;
+    background-color: #1f1f1f;
+    border-radius: 12px;
+    width: 100%;
+    height: 27%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    position: relative;
+    flex-direction: column;
+  }
+  .creeker {
+    width: 80%;
+    left: 10%;
+    bottom: 18px;
+  }
+  .time-volume {
+    width: 300px;
+    margin: 15px auto 0 auto;
+  }
+  .song-time {
+    width: 100%;
+    text-align: center;
+    font-size: 1.5rem;
+  }
+
+  .song-buttons i {
+    font-size: 3rem;
+  }
+  .song-buttons {
+    gap: 25px;
+    margin: 0 auto 0 auto;
+  }
+
+  .song-Name {
+    margin: 25px auto 0 auto;
+    width: 300px;
+    font-size: 1.1rem;
+    height: 50px;
+    text-overflow: ellipsis;
+    word-break: break-all;
+  }
+  .song-time {
+    width: 100%;
+    text-align: center;
+    font-size: 0.9rem;
+  }
+  .left {
+    width: 100%;
+    width: 95%;
+  }
+  .card {
+    width: 95%;
+  }
+  .xmark {
+    position: absolute;
+    left: 77% 378.906px;
+    top: 7%;
+  }
+  .home {
+    padding: 0px;
+  }
+  .home ul {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+  .card-container {
+    height: 66%;
+  }
+}
