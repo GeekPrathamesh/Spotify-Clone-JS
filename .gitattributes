@@ -1,0 +1,7 @@
+*.js linguist-detectable=true
+*.css linguist-detectable=true
+*.html linguist-detectable=true
+*.mp3 linguist-detectable=false
+songs/* linguist-detectable=false
+public/* linguist-detectable=false
+assets/* linguist-detectable=false
