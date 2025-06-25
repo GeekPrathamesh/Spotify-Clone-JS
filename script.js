@@ -10,7 +10,7 @@ let card_container = document.querySelector(".card-container");
 async function callSong(folder) {
   songsUL.innerHTML = "";
   currFolder = folder;
-  const response = await fetch(`http://127.0.0.1:3000/${folder}`);
+  const response = await fetch(`/${folder}`);
   const responseText = await response.text();
 
   let div = document.createElement("div");
@@ -159,6 +159,18 @@ const main = async () => {
   document.querySelector("#volume").addEventListener("change", (e) => {
     console.log(e.target.value);
     currentAudio.volume = e.target.value / 100;
+    if (currentAudio.volume > 0) {
+      try {
+        document
+          .querySelector(".volume-input .fa-solid")
+          .classList.remove("fa-volume-xmark");
+        document
+          .querySelector(".volume-input .fa-solid")
+          .classList.add("fa-volume-high");
+      } catch (err) {
+        console.error("Error toggling volume icon:", err);
+      }
+    }
   });
 
   ////////////////load playlist whenever any card clicked
@@ -189,7 +201,7 @@ const main = async () => {
 main();
 
 async function displayAlbums() {
-  const response = await fetch(`http://127.0.0.1:3000/songs`);
+  const response = await fetch(`/songs`);
   const responseText = await response.text();
 
   let div = document.createElement("div");
@@ -203,9 +215,7 @@ async function displayAlbums() {
       let album = anchor.href.split("/").slice(-2)[0];
       // console.log(albums)
       // // http://127.0.0.1:3000/songs/ab/
-      let folders = await fetch(
-        `http://127.0.0.1:3000/songs/${album}/info.json`
-      );
+      let folders = await fetch(`/songs/${album}/info.json`);
       let response = await folders.json();
       // console.log(response)
       card_container.innerHTML += `<div class="card" data-folder="${album}">
@@ -241,14 +251,9 @@ async function displayAlbums() {
       await callSong(`songs/${e.dataset.folder}`);
       playsong(songs[0]);
 
-
-
       if (window.innerWidth <= 1250) {
         document.querySelector(".hamberger").click();
       }
-
-
-      
     });
   });
 }

@@ -86,20 +86,26 @@ input {
   .volume-input input {
     width: 90px;
   }
+  .volume-input input {
+    width: 130px;
+  }
 }
 
-@media screen and (max-width: 445px) {
+@media screen and (max-width: 555px) {
   .player {
     position: fixed;
-    bottom: 26%;
+    bottom: 0;
+    margin: 2.5% 2.5% 0.5% 2.5%;
+    padding: 10px;
+
     background-color: #1f1f1f;
-    border-radius: 12px;
-    width: 100%;
-    height: 27%;
+    border-radius: 7px;
+    width: 92%;
+    height: 30%;
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    position: relative;
+
     flex-direction: column;
   }
   .creeker {
@@ -160,5 +166,21 @@ input {
   }
   .card-container {
     height: 66%;
+    max-height: none;
+    height: auto;
+    overflow: visible;
+  }
+  .nav-icons {
+    gap: 12px;
+  }
+  .nav-buttons {
+    gap: 6px;
+  }
+  .volume-input {
+    margin: auto;
+    width: 48vw;
+  }
+  .nav-icons{
+    display: none;
   }
 }
