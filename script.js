@@ -90,7 +90,7 @@ const playsong = (audioName, pause = false) => {
 };
 
 const main = async () => {
-  await callSong("songs/ncs");
+  await callSong("songs/ed-sheeran");
   playsong(songs[0], true);
 
   // console.log(songs);
