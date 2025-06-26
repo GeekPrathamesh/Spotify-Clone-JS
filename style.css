@@ -224,6 +224,7 @@ html {
   justify-content: space-evenly;
   align-items: flex-start;
   position: relative;
+  cursor: pointer;
 }
 .song-buttons {
   display: flex;
