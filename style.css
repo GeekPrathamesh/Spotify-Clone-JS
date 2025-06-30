@@ -297,6 +297,8 @@ html {
   width: 94%;
   margin: 5px auto 5px auto;
   cursor: pointer;
+  border-radius: 10px;
+
 }
 .fa-solid {
   margin: 5px;
@@ -315,7 +317,7 @@ html {
 }
 
 .song-info {
-  max-width: 180px;
+  width: 180px;
 }
 /* ////////////////////////////////////////////////// */
 .hamberger {
@@ -329,5 +331,13 @@ html {
   top: 8%;
   cursor: pointer;
 }
+#previous:hover,
+#play:hover,
+#next:hover {
+  transform: scale(1.15);
+}
 
+.list-songs ul li:hover{
+background-color: black;
 
+}
