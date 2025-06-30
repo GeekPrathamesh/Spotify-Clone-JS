@@ -100,6 +100,7 @@ html {
   bottom: 0px;
   display: flex;
   flex-wrap: wrap;
+margin: 3px;
 }
 .library-footer a {
   padding: 6px;
@@ -167,7 +168,7 @@ html {
   flex-wrap: wrap;
   gap: 22px;
   font-size: 0.8rem;
-  max-height: 74vh;
+  max-height: 71vh;
   overflow: scroll;
   overflow-x: hidden;
 }
@@ -267,22 +268,22 @@ html {
   position: absolute;
   width: 85%;
   border-radius: 50px;
-  bottom: 20px;
-  height: 3px;
+  bottom: 16px;
+  height: 8px;
   border: 0.5px solid white;
   background-color: aliceblue;
   cursor: pointer;
 }
 .creekerball {
-  width: 15px;
-  height: 15px;
+  width: 20px;
+  height: 20px;
   position: absolute;
   border-radius: 25px;
   background-color: #1db954;
   /* border: 3px solid white; */
-  bottom: -7px;
-  left: 0%;
-  transition: left 0.25s ease-out;
+  bottom: -6px;
+  left: -1%;
+  transition: left 0.5s ease-out;
 }
 
 /* ///////////////////////////////////// */

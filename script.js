@@ -1,230 +1,225 @@
-let currentAudio = new Audio();
-let playBtn = document.querySelector("#play");
-let previous = document.querySelector("#previous");
-let songs;
+let listSongs = document.querySelector(".list-songs ul");
+let cardsContainer = document.querySelector(".card-container");
+let audio;
+let play;
+let hrefs;
 let currFolder;
-let songsUL = document.querySelector(".list-songs ul");
 let albums;
-let card_container = document.querySelector(".card-container");
-
-async function callSong(folder) {
-  songsUL.innerHTML = "";
-  currFolder = folder;
-  const response = await fetch(`/${folder}`);
-  const responseText = await response.text();
-
+const loadSongs = async (folder) => {
+  let response = await fetch(`/${folder}`);
+  let data = await response.text();
   let div = document.createElement("div");
-  div.innerHTML = responseText;
-  let anchors = div.getElementsByTagName("a");
+  currFolder = folder;
+  div.innerHTML = data;
+  //   console.log(div);
+  let anchors = Array.from(div.getElementsByTagName("a"));
   // console.log(anchors);
-  songs = [];
-  for (let anchor of anchors) {
-    if (anchor.href.endsWith(".mp3")) {
-      songs.push(anchor.href.split(`/${folder}/`)[1]);
-    }
-  }
+  hrefs = anchors.map((anchor) => {
+    return anchor.href;
+  });
+  // console.log(hrefs)
+  hrefs = hrefs.filter((eachhref) => {
+    return eachhref.includes(".mp3");
+  });
+  hrefs = hrefs.map((href) => {
+    return href.split(`/${folder}/`)[1];
+  });
+  // console.log(hrefs);
+  updateSidelist(hrefs);
+  clickList();
+};
 
-  for (let song of songs) {
-    songsUL.innerHTML += `<li>
+// task 1 updating side list
+
+function updateSidelist(hrefs) {
+  listSongs.innerHTML = "";
+  for (let href of hrefs) {
+    // let songName = href.split("/songs/")[1];
+    let songName = href.split(".mp3")[0];
+    songName = decodeURI(songName);
+    // console.log(songName)
+    // "http://127.0.0.1:3000/songs/128-Sairat%20Zaala%20Ji%20-%20Sairat%20128%20Kbps.mp3"
+    listSongs.innerHTML += `<li>
       <i class="fa-solid fa-music"></i>
       <div class="song-info">
-        <p>${decodeURIComponent(song)}</p>
-        <p><i>Bandu</i></p>
+        <p>${songName}</p>
+        <p>Bandu artist</p>
       </div>
       <i class="fa-solid fa-circle-play"></i>
     </li>`;
   }
+}
 
-  /////////event listner to all songs
+function clickList() {
   let lists = Array.from(document.querySelectorAll(".list-songs ul li"));
   lists.forEach((list) => {
-    list.addEventListener("click", (event) => {
-      let audioName = list
-        .querySelector(".song-info")
-        .firstElementChild.innerHTML.trim();
-      console.log(audioName);
-      playsong(audioName);
+    list.addEventListener("click", () => {
+      let songUrl =
+        list.querySelector(".song-info").firstElementChild.textContent + ".mp3";
+      // console.log(songUrl);
+      audioPlay(songUrl);
     });
   });
 }
 
-const playsong = (audioName, pause = false) => {
-  // audioName = encodeURIComponent(audioName);
-  const audioURL = `/${currFolder}/` + audioName;
+function audioPlay(songUrl, value = false) {
+  let link = `/${currFolder}/` + songUrl;
 
-  console.log("Playing:", audioURL);
-
-  if (currentAudio) {
-    currentAudio.pause();
-    currentAudio.currentTime = 0;
+  if (audio) {
+    audio.pause();
   }
-
-  currentAudio = new Audio(audioURL);
-  if (!pause) {
-    currentAudio.play();
-    playBtn.classList.remove("fa-circle-play");
-    playBtn.classList.add("fa-circle-pause");
+  audio = new Audio(link);
+  if (!value) {
+    audio.play();
+    play = true;
+    playSongBtn.classList.remove("fa-circle-play");
+    playSongBtn.classList.add("fa-circle-pause");
   } else {
-    playBtn.classList.remove("fa-circle-pause");
-    playBtn.classList.add("fa-circle-play");
+    audio.pause();
   }
+  //////////songnameupdate///
+  let songnameDisplay = document.querySelector(".song-Name");
+  let decodedSongname = decodeURI(songUrl);
+  decodedSongname = decodedSongname.replace(".mp3", "");
+  songnameDisplay.innerText = decodedSongname;
 
-  const decodedName = decodeURIComponent(audioName);
-  document.querySelector(".song-Name").innerText = decodedName;
-  document.querySelector(".song-time").innerText = "00:00 / 00:00";
-
-  currentAudio.addEventListener("timeupdate", () => {
-    const current = formatTime(currentAudio.currentTime);
-    const total = formatTime(currentAudio.duration);
+  ////////////songtimeupdate////////
+  audio.addEventListener("timeupdate", () => {
+    const current = formatTime(audio.currentTime);
+    const total = formatTime(audio.duration);
     document.querySelector(".song-time").innerText = `${current} / ${total}`;
     document.querySelector(".creekerball").style.left =
-      (currentAudio.currentTime / currentAudio.duration) * 100 + "%";
-  });
+      (audio.currentTime / audio.duration) * 100 + "%";
 
+    ///autoplay///
+  });
   function formatTime(seconds) {
     if (isNaN(seconds)) return "00:00";
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
   }
-};
 
-const main = async () => {
-  await callSong("songs/ed-sheeran");
-  playsong(songs[0], true);
+  audio.addEventListener("ended", () => {
+    let CurraudioSrc = audio.src.split(`/${currFolder}/`)[1];
+    let index = hrefs.indexOf(CurraudioSrc);
 
-  // console.log(songs);
-
-  ////////////////ataching event listner to each previous play next song to access
-
-  playBtn.addEventListener("click", () => {
-    // if (!currentAudio) {
-    //   alert("Play kar pehle song..");
-    //   return;
-    // }
-    if (currentAudio.paused) {
-      currentAudio.play();
-      playBtn.classList.remove("fa-circle-play");
-      playBtn.classList.add("fa-circle-pause");
-    } else {
-      currentAudio.pause();
-      playBtn.classList.remove("fa-circle-pause");
-      playBtn.classList.add("fa-circle-play");
+    if (index + 1 < hrefs.length) {
+      audioPlay(hrefs[index + 1]);
     }
   });
+}
 
-  /////////////seeker movement
+///////////pause btn//////////////////////
+let playSongBtn = document.querySelector("#play");
+playSongBtn.addEventListener("click", () => {
+  if (play) {
+    audio.pause();
+    play = false;
+    playSongBtn.classList.remove("fa-circle-pause");
+    playSongBtn.classList.add("fa-circle-play");
+  } else {
+    audio.play();
+    play = true;
+    playSongBtn.classList.remove("fa-circle-play");
+    playSongBtn.classList.add("fa-circle-pause");
+  }
+});
 
-  document.querySelector(".creeker").addEventListener("click", (e) => {
-    let percent = (e.offsetX / e.target.getBoundingClientRect().width) * 100;
-    document.querySelector(".creekerball").style.left = percent + "%";
-    currentAudio.currentTime = (currentAudio.duration * percent) / 100;
-  });
+/////////next song play//////
+let nextsongBtn = document.querySelector("#next");
+nextsongBtn.addEventListener("click", () => {
+  let CurraudioSrc = audio.src.split(`/${currFolder}/`)[1];
+  let index = hrefs.indexOf(CurraudioSrc);
 
-  ///////////////hamberger event listner
-  document.querySelector(".hamberger").addEventListener("click", () => {
-    document.querySelector(".left").style.left = "0%";
-  });
+  if (index + 1 < hrefs.length) {
+    audioPlay(hrefs[index + 1]);
+  }
+});
 
-  /////////close x button for hamberger
+//////////////previous song button///////
+let previoussongBtn = document.querySelector("#previous");
+previoussongBtn.addEventListener("click", () => {
+  let CurraudioSrc = audio.src.split(`/${currFolder}/`)[1];
+  let index = hrefs.indexOf(CurraudioSrc);
 
-  document.querySelector(".xmark").addEventListener("click", () => {
-    document.querySelector(".left").style.left = "-100%";
-  });
+  if (index > 0) {
+    audioPlay(hrefs[index - 1]);
+  }
+});
 
-  ///////////next song previous song
+/////////seeker movement//////////
+let creeker = document.querySelector(".creeker");
 
-  previous.addEventListener("click", () => {
-    currentAudio.pause();
+creeker.addEventListener("click", (e) => {
+  let percent = (e.offsetX / e.target.getBoundingClientRect().width) * 100;
+  let creekerball = document.querySelector(".creekerball");
+  creekerball.style.left = percent + "%";
+  if (audio) {
+    audio.currentTime = (audio.duration * percent) / 100;
+  }
+});
 
-    let idx = songs.indexOf(currentAudio.src.split("/").slice(-1)[0]);
-    console.log(idx);
-    if (idx > 0) {
-      playsong(songs[idx - 1]);
-    }
-  });
+//////////////////volume change/////////
+let volumeChange = document.querySelector(".volume-input");
+document.querySelector("#volume").addEventListener("change", (e) => {
+  audio.volume = e.target.value / 100;
+  if (audio.volume === 0) {
+    volumeChange.querySelector("i").classList.remove("fa-volume-high");
+    volumeChange.querySelector("i").classList.add("fa-volume-xmark");
+  } else {
+    volumeChange.querySelector("i").classList.remove("fa-volume-xmark");
+    volumeChange.querySelector("i").classList.add("fa-volume-high");
+  }
+});
 
-  next.addEventListener("click", () => {
-    currentAudio.pause();
+volumeChange.querySelector("i").addEventListener("click", (e) => {
+  if (e.target.classList.contains("fa-volume-high")) {
+    audio.volume = 0;
+    document.querySelector("#volume").value = 0;
+    volumeChange.querySelector("i").classList.remove("fa-volume-high");
+    volumeChange.querySelector("i").classList.add("fa-volume-xmark");
+  } else {
+    audio.volume = 0.33;
+    volumeChange.querySelector("i").classList.add("fa-volume-high");
+    volumeChange.querySelector("i").classList.remove("fa-volume-xmark");
+    document.querySelector("#volume").value = audio.volume * 100;
+  }
+});
 
-    let idx = songs.indexOf(currentAudio.src.split("/").slice(-1)[0]);
-    console.log(idx);
-    if (idx < songs.length) {
-      playsong(songs[idx + 1]);
-    }
-  });
-
-  //////////////volume control
-
-  document.querySelector("#volume").addEventListener("change", (e) => {
-    console.log(e.target.value);
-    currentAudio.volume = e.target.value / 100;
-    if (currentAudio.volume > 0) {
-      try {
-        document
-          .querySelector(".volume-input .fa-solid")
-          .classList.remove("fa-volume-xmark");
-        document
-          .querySelector(".volume-input .fa-solid")
-          .classList.add("fa-volume-high");
-      } catch (err) {
-        console.error("Error toggling volume icon:", err);
-      }
-    }
-  });
-
-  ////////////////load playlist whenever any card clicked
+async function main() {
+  await loadSongs("Main/coldplay");
+  audioPlay(hrefs[0], true);
   displayAlbums();
-
-  ///////////////event listner to mute the track
-
-  document
-    .querySelector(".volume-input .fa-solid")
-    .addEventListener("click", (e) => {
-      if (e.target.classList.contains("fa-volume-high")) {
-        e.target.classList.remove("fa-volume-high");
-        e.target.classList.add("fa-volume-xmark");
-        currentAudio.volume = 0;
-        document.querySelector("#volume").value = 0;
-      } else if (e.target.classList.contains("fa-volume-xmark")) {
-        e.target.classList.remove("fa-volume-xmark");
-        e.target.classList.add("fa-volume-high");
-        document.querySelector("#volume").value = 40;
-
-        currentAudio.volume = 0.4;
-      }
-    });
-};
-
-////////////display albums
-
+}
 main();
 
 async function displayAlbums() {
-  const response = await fetch(`/songs`);
-  const responseText = await response.text();
-
+  let response = await fetch(`/Main`);
+  let data = await response.text();
+  // console.log(data);
   let div = document.createElement("div");
-  div.innerHTML = responseText;
+  div.innerHTML = data;
   let anchors = Array.from(div.getElementsByTagName("a"));
-  // console.log(anchors);
+
   albums = [];
   for (let anchor of anchors) {
-    if (anchor.href.includes("/songs/")) {
+    if (anchor.href.includes("/Main/")) {
+      // console.log(anchor.href);
       albums.push(anchor.href.split("/").slice(-2)[0]);
-      let album = anchor.href.split("/").slice(-2)[0];
-      // console.log(albums)
-      // // http://127.0.0.1:3000/songs/ab/
-      let folders = await fetch(`/songs/${album}/info.json`);
-      let response = await folders.json();
-      // console.log(response)
-      card_container.innerHTML += `<div class="card" data-folder="${album}">
+    }
+  }
+  let html = "";
+  for (let album of albums) {
+    let response = await fetch(`/Main/${album}/info.json`);
+    let data = await response.json();
+    html += `<div class="card" data-folder ="Main/${album}" >
               <img
-                src="/songs/${album}/cover.jpg"
+                src="/Main/${album}/cover.jpg"
                 alt="playlist coverpage"
               />
-              <h2>${response.title}</h2>
-              <p>${response.description}</p>
+              <h2>${data.title}</h2>
+              <p>${data.description}</p>
               <div class="play">
                 <svg
                   class="play-icon"
@@ -239,21 +234,28 @@ async function displayAlbums() {
                 </svg>
               </div>
             </div>`;
-    }
   }
-  // console.log(albums)
-
-  // songs = [];
-  Array.from(document.querySelectorAll(".card")).forEach((e) => {
-    e.addEventListener("click", async (eachcardchoosen) => {
-      console.log(e.dataset.folder);
-      console.log("button click");
-      await callSong(`songs/${e.dataset.folder}`);
-      playsong(songs[0]);
-
+  cardsContainer.innerHTML = html;
+  let card = Array.from(document.querySelectorAll(".card"));
+  card.forEach((eachCard) => {
+    eachCard.addEventListener("click", async () => {
+      let cardAddress = eachCard.dataset.folder;
+      await loadSongs(cardAddress);
+      audioPlay(hrefs[0]);
       if (window.innerWidth <= 1250) {
         document.querySelector(".hamberger").click();
       }
     });
   });
 }
+
+///////////////hamberger event listner
+document.querySelector(".hamberger").addEventListener("click", () => {
+  document.querySelector(".left").style.left = "0%";
+});
+
+/////////close x button for hamberger
+
+document.querySelector(".xmark").addEventListener("click", () => {
+  document.querySelector(".left").style.left = "-100%";
+});
